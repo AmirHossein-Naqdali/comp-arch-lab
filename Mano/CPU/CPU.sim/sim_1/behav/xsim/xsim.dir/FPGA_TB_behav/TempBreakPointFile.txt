@@ -1,0 +1,5 @@
+Breakpoint File Version 1.0
+63,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/FPGA_TB.v"
+69,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/FPGA_TB.v"
+72,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/FPGA_TB.v"
+75,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/FPGA_TB.v"

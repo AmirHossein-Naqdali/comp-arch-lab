@@ -1,0 +1,8 @@
+Breakpoint File Version 1.0
+48,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Decoder_TB.v"
+51,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Decoder_TB.v"
+55,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Decoder_TB.v"
+59,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Decoder_TB.v"
+63,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Decoder_TB.v"
+67,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Decoder_TB.v"
+70,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Decoder_TB.v"

@@ -1,0 +1,10 @@
+Breakpoint File Version 1.0
+74,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Memory_TB.v"
+81,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Memory_TB.v"
+86,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Memory_TB.v"
+92,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Memory_TB.v"
+96,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Memory_TB.v"
+108,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Memory_TB.v"
+100,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Memory_TB.v"
+104,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Memory_TB.v"
+111,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Memory_TB.v"
