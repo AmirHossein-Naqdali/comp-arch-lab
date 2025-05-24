@@ -91,7 +91,7 @@ begin
             Out_Temp = Inp_1;
         end
         
-        // Default
+        // Defaults
         default:
         begin
             E_Out_Temp = 1'b0;
