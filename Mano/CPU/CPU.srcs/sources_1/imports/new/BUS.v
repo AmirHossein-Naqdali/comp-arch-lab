@@ -90,7 +90,7 @@ begin
             Out_Temp = Inp_7;
         end
         
-        // Default
+        // Defaults
         default:
         begin
             Out_Temp = 'b0;

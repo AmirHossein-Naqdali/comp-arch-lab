@@ -43,7 +43,7 @@ begin
     Data_Out_Reg = 'b0;
     
     // Memory Initialization
-    $readmemb("RAM.data", RAM);
+    $readmemb("Initial_RAM_Values.data", RAM);
 end
 
 // Sequential Circuit
@@ -65,20 +65,10 @@ begin
     if (Reset == 1'b1)
     begin
         Data_Out_Reg <= 'b0;
-        
-        // *
-//        for (i = 0; i < (2**Address_Width) - 1; i = i + 1)
-//        begin
-//            RAM[i] <= 'b0;
-//        end
-        // *
     end
 end
 
 // Assign to Output
 assign Data_Out = Data_Out_Reg;
-// *
-//assign Data_Out = ((Write == 1'b0) && (Read == 1'b1)) ? RAM[Address] : {(Data_Width){1'bZ}};
-// *
 
 endmodule

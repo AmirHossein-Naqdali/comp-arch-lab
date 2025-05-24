@@ -14,6 +14,9 @@ module CPU
     input Clock,
     input Reset,
     
+    // S SET
+    input S_SET,
+    
     // Memory Interface
     // Memory Control Channel
     output Memory_Write,
@@ -108,12 +111,12 @@ reg Sequence_Counter_T6;
 reg Sequence_Counter_T7;
 reg Sequence_Counter_T8;
 reg Sequence_Counter_T9;
-reg Sequence_Counter_T10;
-reg Sequence_Counter_T11;
-reg Sequence_Counter_T12;
-reg Sequence_Counter_T13;
-reg Sequence_Counter_T14;
-reg Sequence_Counter_T15;
+//reg Sequence_Counter_T10;
+//reg Sequence_Counter_T11;
+//reg Sequence_Counter_T12;
+//reg Sequence_Counter_T13;
+//reg Sequence_Counter_T14;
+//reg Sequence_Counter_T15;
 // Decoder Outputs
 reg Decoder_D0;
 reg Decoder_D1;
@@ -163,15 +166,15 @@ Control_Unit_Module
     .T4(Sequence_Counter_T4),
     .T5(Sequence_Counter_T5),
     .T6(Sequence_Counter_T6),
-//    .T7(Sequence_Counter_T7),
-//    .T8(Sequence_Counter_T8),
-//    .T9(Sequence_Counter_T9),
-//    .T10(Sequence_Counter_T10),
-//    .T11(Sequence_Counter_T11),
-//    .T12(Sequence_Counter_T12),
-//    .T13(Sequence_Counter_T13),
-//    .T14(Sequence_Counter_T14),
-//    .T15(Sequence_Counter_T15),
+    .T7(Sequence_Counter_T7),
+    .T8(Sequence_Counter_T8),
+    .T9(Sequence_Counter_T9),
+    //.T10(Sequence_Counter_T10),
+    //.T11(Sequence_Counter_T11),
+    //.T12(Sequence_Counter_T12),
+    //.T13(Sequence_Counter_T13),
+    //.T14(Sequence_Counter_T14),
+    //.T15(Sequence_Counter_T15),
     // Decoded Operator
     .D0(Decoder_D0),
     .D1(Decoder_D1),
@@ -466,6 +469,11 @@ begin
         R <= 1'b0;
     end
     // S
+    // SET
+    if (S_SET == 1'b1)
+    begin
+        S <= 1'b1;
+    end
     // RESET
     if (S_RESET == 1'b1)
     begin
@@ -496,7 +504,10 @@ begin
     end
     
     // Sequence Counter
-    Counter <= Counter + 1'b1;
+    if (S == 1'b1)
+    begin
+        Counter <= Counter + 1'b1;
+    end
     if (Sequence_Counter_Reset == 1'b1)
     begin
         Counter <= 'b0;
@@ -543,111 +554,111 @@ begin
     Sequence_Counter_T7  = 1'b0;
     Sequence_Counter_T8  = 1'b0;
     Sequence_Counter_T9  = 1'b0;
-    Sequence_Counter_T10 = 1'b0;
-    Sequence_Counter_T11 = 1'b0;
-    Sequence_Counter_T12 = 1'b0;
-    Sequence_Counter_T13 = 1'b0;
-    Sequence_Counter_T14 = 1'b0;
-    Sequence_Counter_T15 = 1'b0;
+    //Sequence_Counter_T10 = 1'b0;
+    //Sequence_Counter_T11 = 1'b0;
+    //Sequence_Counter_T12 = 1'b0;
+    //Sequence_Counter_T13 = 1'b0;
+    //Sequence_Counter_T14 = 1'b0;
+    //Sequence_Counter_T15 = 1'b0;
     
-    case (Counter)
+    case ({S, Counter})
         // Active T0
-        4'b0000:
+        5'b10000:
         begin
             Sequence_Counter_T0 = 1'b1;
         end
         
         // Active T1
-        4'b0001:
+        5'b10001:
         begin
             Sequence_Counter_T1 = 1'b1;
         end
         
         // Active T2
-        4'b0010:
+        5'b10010:
         begin
             Sequence_Counter_T2 = 1'b1;
         end
         
         // Active T3
-        4'b0011:
+        5'b10011:
         begin
             Sequence_Counter_T3 = 1'b1;
         end
         
         // Active T4
-        4'b0100:
+        5'b10100:
         begin
             Sequence_Counter_T4 = 1'b1;
         end
         
         // Active T5
-        4'b0101:
+        5'b10101:
         begin
             Sequence_Counter_T5 = 1'b1;
         end
         
         // Active T6
-        4'b0110:
+        5'b10110:
         begin
             Sequence_Counter_T6 = 1'b1;
         end
         
         // Active T7
-        4'b0111:
+        5'b10111:
         begin
             Sequence_Counter_T7 = 1'b1;
         end
         
         // Active T8
-        4'b1000:
+        5'b11000:
         begin
             Sequence_Counter_T8 = 1'b1;
         end
         
         // Active T9
-        4'b1001:
+        5'b11001:
         begin
             Sequence_Counter_T9 = 1'b1;
         end
         
         // Active T10
-        4'b1010:
-        begin
-            Sequence_Counter_T10 = 1'b1;
-        end
+        //5'b11010:
+        //begin
+            //Sequence_Counter_T10 = 1'b1;
+        //end
         
         // Active T11
-        4'b1011:
-        begin
-            Sequence_Counter_T11 = 1'b1;
-        end
+        //5'b11011:
+        //begin
+            //Sequence_Counter_T11 = 1'b1;
+        //end
         
         // Active T12
-        4'b1100:
-        begin
-            Sequence_Counter_T12 = 1'b1;
-        end
+        //5'b11100:
+        //begin
+            //Sequence_Counter_T12 = 1'b1;
+        //end
         
         // Active T13
-        4'b1101:
-        begin
-            Sequence_Counter_T13 = 1'b1;
-        end
+        //5'b11101:
+        //begin
+            //Sequence_Counter_T13 = 1'b1;
+        //end
         
         // Active T14
-        4'b1110:
-        begin
-            Sequence_Counter_T14 = 1'b1;
-        end
+        //5'b11110:
+        //begin
+            //Sequence_Counter_T14 = 1'b1;
+        //end
         
         // Active T15
-        4'b1111:
-        begin
-            Sequence_Counter_T15 = 1'b1;
-        end
+        //5'b11111:
+        //begin
+            //Sequence_Counter_T15 = 1'b1;
+        //end
         
-        // Default
+        // Defaults
         default:
         begin
             Sequence_Counter_T0  = 1'b0;
@@ -660,12 +671,12 @@ begin
             Sequence_Counter_T7  = 1'b0;
             Sequence_Counter_T8  = 1'b0;
             Sequence_Counter_T9  = 1'b0;
-            Sequence_Counter_T10 = 1'b0;
-            Sequence_Counter_T11 = 1'b0;
-            Sequence_Counter_T12 = 1'b0;
-            Sequence_Counter_T13 = 1'b0;
-            Sequence_Counter_T14 = 1'b0;
-            Sequence_Counter_T15 = 1'b0;
+            //Sequence_Counter_T10 = 1'b0;
+            //Sequence_Counter_T11 = 1'b0;
+            //Sequence_Counter_T12 = 1'b0;
+            //Sequence_Counter_T13 = 1'b0;
+            //Sequence_Counter_T14 = 1'b0;
+            //Sequence_Counter_T15 = 1'b0;
         end
     endcase
 end
@@ -730,6 +741,7 @@ begin
             Decoder_D7 = 1'b1;
         end
         
+        // Defaults
         default:
         begin
             Decoder_D0 = 1'b0;
