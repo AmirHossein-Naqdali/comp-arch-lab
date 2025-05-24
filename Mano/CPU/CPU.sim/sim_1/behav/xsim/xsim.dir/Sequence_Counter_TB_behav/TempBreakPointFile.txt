@@ -1,9 +1,0 @@
-Breakpoint File Version 1.0
-72,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Sequence_Counter_TB.v"
-75,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Sequence_Counter_TB.v"
-79,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Sequence_Counter_TB.v"
-82,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Sequence_Counter_TB.v"
-85,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Sequence_Counter_TB.v"
-89,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Sequence_Counter_TB.v"
-93,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Sequence_Counter_TB.v"
-96,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/Sequence_Counter_TB.v"

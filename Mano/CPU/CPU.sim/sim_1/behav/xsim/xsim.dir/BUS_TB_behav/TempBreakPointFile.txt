@@ -1,9 +1,0 @@
-Breakpoint File Version 1.0
-72,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/BUS_TB.v"
-76,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/BUS_TB.v"
-61,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/BUS_TB.v"
-80,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/BUS_TB.v"
-84,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/BUS_TB.v"
-88,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/BUS_TB.v"
-91,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/BUS_TB.v"
-58,true,"A:/Codes/New/CPU/CPU/CPU.srcs/sim_1/new/BUS_TB.v"
