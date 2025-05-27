@@ -126,6 +126,7 @@ reg Decoder_D4;
 reg Decoder_D5;
 reg Decoder_D6;
 reg Decoder_D7;
+reg Decoder_D8;  // New decoder output for ABS instruction
 
 // Instantiated Modules Signals
 // ALU Module
@@ -184,6 +185,7 @@ Control_Unit_Module
     .D5(Decoder_D5),
     .D6(Decoder_D6),
     .D7(Decoder_D7),
+    .D8(Decoder_D8),  // New connection for ABS instruction
     
     // Outputs
     // Memory Control Channel
@@ -703,69 +705,79 @@ begin
     Decoder_D5 = 1'b0;
     Decoder_D6 = 1'b0;
     Decoder_D7 = 1'b0;
+    Decoder_D8 = 1'b0;  // New decoder output for ABS instruction
     
-    case (IR[14 : 12])
-        // AND
-        3'b000:
-        begin
-            Decoder_D0 = 1'b1;
-        end
-        
-        // ADD
-        3'b001:
-        begin
-            Decoder_D1 = 1'b1;
-        end
-        
-        // LDA
-        3'b010:
-        begin
-            Decoder_D2 = 1'b1;
-        end
-        
-        // STA
-        3'b011:
-        begin
-            Decoder_D3 = 1'b1;
-        end
-        
-        // BUN
-        3'b100:
-        begin
-            Decoder_D4 = 1'b1;
-        end
-        
-        // BSA
-        3'b101:
-        begin
-            Decoder_D5 = 1'b1;
-        end
-        
-        // ISZ
-        3'b110:
-        begin
-            Decoder_D6 = 1'b1;
-        end
-        
-        // Register and Input/Output Instruction
-        3'b111:
-        begin
-            Decoder_D7 = 1'b1;
-        end
-        
-        // Defaults
-        default:
-        begin
-            Decoder_D0 = 1'b0;
-            Decoder_D1 = 1'b0;
-            Decoder_D2 = 1'b0;
-            Decoder_D3 = 1'b0;
-            Decoder_D4 = 1'b0;
-            Decoder_D5 = 1'b0;
-            Decoder_D6 = 1'b0;
-            Decoder_D7 = 1'b0;
-        end
-    endcase
+    // Check for ABS instruction first (4-bit opcode: 1000)
+    if (IR[15:12] == 4'b1000)
+    begin
+        Decoder_D8 = 1'b1;
+    end
+    else
+    begin
+        case (IR[14 : 12])
+            // AND
+            3'b000:
+            begin
+                Decoder_D0 = 1'b1;
+            end
+            
+            // ADD
+            3'b001:
+            begin
+                Decoder_D1 = 1'b1;
+            end
+            
+            // LDA
+            3'b010:
+            begin
+                Decoder_D2 = 1'b1;
+            end
+            
+            // STA
+            3'b011:
+            begin
+                Decoder_D3 = 1'b1;
+            end
+            
+            // BUN
+            3'b100:
+            begin
+                Decoder_D4 = 1'b1;
+            end
+            
+            // BSA
+            3'b101:
+            begin
+                Decoder_D5 = 1'b1;
+            end
+            
+            // ISZ
+            3'b110:
+            begin
+                Decoder_D6 = 1'b1;
+            end
+            
+            // Register and Input/Output Instruction
+            3'b111:
+            begin
+                Decoder_D7 = 1'b1;
+            end
+            
+            // Defaults
+            default:
+            begin
+                Decoder_D0 = 1'b0;
+                Decoder_D1 = 1'b0;
+                Decoder_D2 = 1'b0;
+                Decoder_D3 = 1'b0;
+                Decoder_D4 = 1'b0;
+                Decoder_D5 = 1'b0;
+                Decoder_D6 = 1'b0;
+                Decoder_D7 = 1'b0;
+                Decoder_D8 = 1'b0;
+            end
+        endcase
+    end
 end
 
 // Assign to Outputs
