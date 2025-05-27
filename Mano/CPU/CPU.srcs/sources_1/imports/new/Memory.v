@@ -49,16 +49,15 @@ end
 // Sequential Circuit
 always @(posedge Clock)
 begin
-    // Read Logic
-    if ((Write == 1'b0) && (Read == 1'b1))
-    begin
-        Data_Out_Reg <= RAM[Address];
-    end
-    
-    // Write Logic
+    // Fix: Explicit priority - Write takes precedence over Read
     if (Write == 1'b1)
     begin
         RAM[Address] <= Data_In;
+    end
+    // Read Logic (only when not writing)
+    else if (Read == 1'b1)
+    begin
+        Data_Out_Reg <= RAM[Address];
     end
     
     // Reset Logic

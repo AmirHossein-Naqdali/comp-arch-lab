@@ -334,41 +334,43 @@ always @(posedge Clock)
 begin
     // Registers
     // AC Logic
-    // NOT
-    if (AC_NOT == 1'b1)
-    begin
-        AC <= ~AC;
-    end
-    // INR
-    if (AC_INR == 1'b1)
-    begin
-        AC <= AC + 1'b1;
-    end
-    // LD
-    if (AC_LD == 1'b1)
-    begin
-        AC <= ALU_Module_Out;
-    end
+    // Fix: Use priority order to prevent control signal conflicts
     // CLR
     if (AC_CLR == 1'b1)
     begin
         AC <= 'b0;
     end
-    // DR Logic
-    // INR
-    if (DR_INR == 1'b1)
-    begin
-        DR <= DR + 1'b1;
-    end
     // LD
-    if (DR_LD == 1'b1)
+    else if (AC_LD == 1'b1)
     begin
-        DR <= BUS_Module_Out;
+        AC <= ALU_Module_Out;
     end
+    // NOT
+    else if (AC_NOT == 1'b1)
+    begin
+        AC <= ~AC;
+    end
+    // INR
+    else if (AC_INR == 1'b1)
+    begin
+        AC <= AC + 1'b1;
+    end
+    // DR Logic
+    // Fix: Use priority order to prevent control signal conflicts
     // CLR
     if (DR_CLR == 1'b1)
     begin
         DR <= 'b0;
+    end
+    // LD
+    else if (DR_LD == 1'b1)
+    begin
+        DR <= BUS_Module_Out;
+    end
+    // INR
+    else if (DR_INR == 1'b1)
+    begin
+        DR <= DR + 1'b1;
     end
     // IR Logic
     // LD
@@ -377,61 +379,70 @@ begin
         IR <= BUS_Module_Out;
     end
     // TR Logic
-    // INR
-    if (TR_INR == 1'b1)
-    begin
-        TR <= TR + 1'b1;
-    end
-    // LD
-    if (TR_LD == 1'b1)
-    begin
-        TR <= BUS_Module_Out;
-    end
+    // Fix: Use priority order to prevent control signal conflicts
     // CLR
     if (TR_CLR == 1'b1)
     begin
         TR <= 'b0;
     end
-    // AR Logic
-    // INR
-    if (AR_INR == 1'b1)
-    begin
-        AR <= AR + 1'b1;
-    end
     // LD
-    if (AR_LD == 1'b1)
+    else if (TR_LD == 1'b1)
     begin
-        AR <= BUS_Module_Out;
+        TR <= BUS_Module_Out;
     end
+    // INR
+    else if (TR_INR == 1'b1)
+    begin
+        TR <= TR + 1'b1;
+    end
+    // AR Logic
+    // Fix: Use priority order to prevent control signal conflicts
     // CLR
     if (AR_CLR == 1'b1)
     begin
         AR <= 'b0;
     end
-    // PC Logic
-    // INR
-    if (PC_INR == 1'b1)
-    begin
-        PC <= PC + 1'b1;
-    end
     // LD
-    if (PC_LD == 1'b1)
+    else if (AR_LD == 1'b1)
     begin
-        PC <= BUS_Module_Out;
+        AR <= BUS_Module_Out;
     end
+    // INR
+    else if (AR_INR == 1'b1)
+    begin
+        AR <= AR + 1'b1;
+    end
+    // PC Logic
+    // Fix: Use priority order to prevent control signal conflicts
     // CLR
     if (PC_CLR == 1'b1)
     begin
         PC <= 'b0;
     end
-    // INPR Logic
     // LD
-    INPR <= INPR_In;
+    else if (PC_LD == 1'b1)
+    begin
+        PC <= BUS_Module_Out;
+    end
+    // INR
+    else if (PC_INR == 1'b1)
+    begin
+        PC <= PC + 1'b1;
+    end
+    // INPR Logic
+    // Fix: Load INPR conditionally and set FGI when new input available
+    if (INPR_In != INPR)
+    begin
+        INPR <= INPR_In;
+        FGI <= 1'b1;  // Set flag when new input is available
+    end
     // OUTR Logic
     // LD
     if (OUTR_LD == 1'b1)
     begin
         OUTR <= BUS_Module_Out;
+        // Fix: Set FGO when output is ready
+        FGO <= 1'b1;
     end
     
     // Flip-Flops
@@ -442,20 +453,21 @@ begin
         I <= IR[Data_Width - 1];
     end
     // E
-    // NOT
-    if (E_NOT == 1'b1)
-    begin
-        E <= ~E;
-    end
-    // SET
+    // Fix: Use priority order to prevent control signal conflicts
+    // RESET
     if (E_RESET == 1'b1)
     begin
         E <= 1'b0;
     end
     // LOAD
-    if (E_LOAD == 1'b1)
+    else if (E_LOAD == 1'b1)
     begin
         E <= ALU_Module_E_Out;
+    end
+    // NOT
+    else if (E_NOT == 1'b1)
+    begin
+        E <= ~E;
     end
     // R
     // SET

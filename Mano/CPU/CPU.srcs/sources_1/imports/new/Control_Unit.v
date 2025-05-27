@@ -187,7 +187,8 @@ assign E_LOAD  = ((D1 & T8) | (r & IR[7]) | (r & IR[6]));
 assign E_RESET = (r & IR[10]);
 assign E_NOT   = (r & IR[8]);
 // R
-assign R_SET   = ((~T0) & (~T1) & (~T2) & (~T3) & IEN & (FGI | FGO));
+// Fix: Add T4 check to prevent race conditions during instruction execution
+assign R_SET   = ((~T0) & (~T1) & (~T2) & (~T3) & (~T4) & IEN & (FGI | FGO));
 assign R_RESET = (R & T2);
 // S
 assign S_RESET = (r & IR[0]);
