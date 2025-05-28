@@ -46,6 +46,7 @@ module Control_Unit
     input D5,
     input D6,
     input D7,
+    input D8,  // New input for ABS instruction
     
     // Outputs
     // Memory Control Channel
@@ -112,6 +113,8 @@ wire DR_Zero;
 wire AC_Positive;
 wire AC_Negative;
 wire AC_Zero;
+// ABS instruction comparison
+wire AC_Greater_Than_DR;  // New wire for ABS instruction
 // Flip-Flops
 // E
 wire E_Zero;
@@ -130,6 +133,8 @@ assign DR_Zero = ((DR == {(Data_Width){1'b0}}) ? (1'b1) : (1'b0));
 assign AC_Positive = (~AC[15]);
 assign AC_Negative = (AC[15]);
 assign AC_Zero     = ((AC == {(Data_Width){1'b0}}) ? (1'b1) : (1'b0));
+// ABS instruction comparison: AC > DR (signed comparison)
+assign AC_Greater_Than_DR = ($signed(AC) > $signed(DR));
 // Flip-Flops
 // E
 assign E_Zero = (~E);
@@ -146,7 +151,7 @@ assign p = (D7 & I & T4);
 // Memory Control Channel
 // Memory
 assign Memory_Read  = (((~R) & T1) | ((~D7) & I & T4) | (D0 & T6) | (D1 & T6) | (D2 & T6) |
-                      (D6 & T6));
+                      (D6 & T6) | (D8 & T6));
 assign Memory_Write = ((R & T1) | (D3 & T6) | (D5 & T6) | (D6 & T9));
 
 // Registers Controls
@@ -156,7 +161,7 @@ assign AC_INR = (r & IR[5]);
 assign AC_CLR = (r & IR[11]);
 assign AC_NOT = (r & IR[9]);
 // DR
-assign DR_LD  = ((D0 & T7) | (D1 & T7) | (D2 & T7) | (D6 & T7));
+assign DR_LD  = ((D0 & T7) | (D1 & T7) | (D2 & T7) | (D6 & T7) | (D8 & T7));
 assign DR_INR = (D6 & T8);
 assign DR_CLR = (1'b0);
 // IR
@@ -174,7 +179,8 @@ assign PC_LD  = ((D4 & T6) | (D5 & T7));
 assign PC_INR = (((~R) & T2) | (R & T2) | (DR_Zero & D6 & T9) | (AC_Positive & (r & IR[4])) |
                 (AC_Negative & (r & IR[3])) | (AC_Zero & (r & IR[2])) |
                 (E_Zero & (r & IR[1])) | (FGI_One & (p & IR[9])) |
-                (FGO_Zero & (p & IR[8])));
+                (FGO_Zero & (p & IR[8])) | (D8 & T8) | 
+                ((~AC_Greater_Than_DR) & D8 & T9));  // ABS: increment once at T8, twice if AC <= DR
 assign PC_CLR = (R & T1);
 // OUTR
 assign OUTR_LD = (p & IR[10]);
@@ -187,7 +193,8 @@ assign E_LOAD  = ((D1 & T8) | (r & IR[7]) | (r & IR[6]));
 assign E_RESET = (r & IR[10]);
 assign E_NOT   = (r & IR[8]);
 // R
-assign R_SET   = ((~T0) & (~T1) & (~T2) & (~T3) & IEN & (FGI | FGO));
+// Fix: Add T4 check to prevent race conditions during instruction execution
+assign R_SET   = ((~T0) & (~T1) & (~T2) & (~T3) & (~T4) & IEN & (FGI | FGO));
 assign R_RESET = (R & T2);
 // S
 assign S_RESET = (r & IR[0]);
@@ -201,18 +208,20 @@ assign FGO_RESET = (p & IR[10]);
 
 // Sequence Counter Reset
 assign Sequence_Counter_Reset = ((R & T2) | (D0 & T8) | (D1 & T8) | (D2 & T8) | (D3 & T6) |
-                                (D4 & T6) | (D5 & T7) | (D6 & T9) | (r) | (p));
- // ALU Select
+                                (D4 & T6) | (D5 & T7) | (D6 & T9) | (r) | (p) |
+                                (AC_Greater_Than_DR & D8 & T8) | ((~AC_Greater_Than_DR) & D8 & T9));  // ABS instruction reset
+
+// ALU Select
 assign ALU_Select[2] = ((D2 & T8) | (r & IR[7]) | (r & IR[6]) | (p & IR[11]));
 assign ALU_Select[1] = ((D0 & T8) | (D1 & T8) | (D2 & T8) | (p & IR[11]));
 assign ALU_Select[0] = ((D1 & T8) | (D2 & T8) | (r & IR[6]));
 
 // ALU Select
 assign BUS_Select[2] = ((D3 & T6) | (p & IR[10]) | ((~R) & T3) | (R & T1) |
-                       ((~R) & T1) | ((~D7) & I & T4) | (D0 & T6) | (D1 & T6) | (D2 & T6) | (D6 & T6));
+                       ((~R) & T1) | ((~D7) & I & T4) | (D0 & T6) | (D1 & T6) | (D2 & T6) | (D6 & T6) | (D8 & T6));
 assign BUS_Select[1] = (((~R) & T0) | (R & T0) | (D5 & T6) | (D6 & T9) | (R & T1) |
-                       ((~R) & T1) | ((~D7) & I & T4) | (D0 & T6) | (D1 & T6) | (D2 & T6) | (D6 & T6));
+                       ((~R) & T1) | ((~D7) & I & T4) | (D0 & T6) | (D1 & T6) | (D2 & T6) | (D6 & T6) | (D8 & T6));
 assign BUS_Select[0] = ((D4 & T6) | (D5 & T7) | (D6 & T9) | ((~R) & T3) |
-                       ((~R) & T1) | ((~D7) & I & T4) | (D0 & T6) | (D1 & T6) | (D2 & T6) | (D6 & T6));
+                       ((~R) & T1) | ((~D7) & I & T4) | (D0 & T6) | (D1 & T6) | (D2 & T6) | (D6 & T6) | (D8 & T6));
 
 endmodule

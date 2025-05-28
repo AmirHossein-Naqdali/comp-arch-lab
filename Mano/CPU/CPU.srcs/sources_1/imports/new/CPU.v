@@ -126,6 +126,7 @@ reg Decoder_D4;
 reg Decoder_D5;
 reg Decoder_D6;
 reg Decoder_D7;
+reg Decoder_D8;  // New decoder output for ABS instruction
 
 // Instantiated Modules Signals
 // ALU Module
@@ -184,6 +185,7 @@ Control_Unit_Module
     .D5(Decoder_D5),
     .D6(Decoder_D6),
     .D7(Decoder_D7),
+    .D8(Decoder_D8),  // New connection for ABS instruction
     
     // Outputs
     // Memory Control Channel
@@ -334,41 +336,43 @@ always @(posedge Clock)
 begin
     // Registers
     // AC Logic
-    // NOT
-    if (AC_NOT == 1'b1)
-    begin
-        AC <= ~AC;
-    end
-    // INR
-    if (AC_INR == 1'b1)
-    begin
-        AC <= AC + 1'b1;
-    end
-    // LD
-    if (AC_LD == 1'b1)
-    begin
-        AC <= ALU_Module_Out;
-    end
+    // Fix: Use priority order to prevent control signal conflicts
     // CLR
     if (AC_CLR == 1'b1)
     begin
         AC <= 'b0;
     end
-    // DR Logic
-    // INR
-    if (DR_INR == 1'b1)
-    begin
-        DR <= DR + 1'b1;
-    end
     // LD
-    if (DR_LD == 1'b1)
+    else if (AC_LD == 1'b1)
     begin
-        DR <= BUS_Module_Out;
+        AC <= ALU_Module_Out;
     end
+    // NOT
+    else if (AC_NOT == 1'b1)
+    begin
+        AC <= ~AC;
+    end
+    // INR
+    else if (AC_INR == 1'b1)
+    begin
+        AC <= AC + 1'b1;
+    end
+    // DR Logic
+    // Fix: Use priority order to prevent control signal conflicts
     // CLR
     if (DR_CLR == 1'b1)
     begin
         DR <= 'b0;
+    end
+    // LD
+    else if (DR_LD == 1'b1)
+    begin
+        DR <= BUS_Module_Out;
+    end
+    // INR
+    else if (DR_INR == 1'b1)
+    begin
+        DR <= DR + 1'b1;
     end
     // IR Logic
     // LD
@@ -377,61 +381,70 @@ begin
         IR <= BUS_Module_Out;
     end
     // TR Logic
-    // INR
-    if (TR_INR == 1'b1)
-    begin
-        TR <= TR + 1'b1;
-    end
-    // LD
-    if (TR_LD == 1'b1)
-    begin
-        TR <= BUS_Module_Out;
-    end
+    // Fix: Use priority order to prevent control signal conflicts
     // CLR
     if (TR_CLR == 1'b1)
     begin
         TR <= 'b0;
     end
-    // AR Logic
-    // INR
-    if (AR_INR == 1'b1)
-    begin
-        AR <= AR + 1'b1;
-    end
     // LD
-    if (AR_LD == 1'b1)
+    else if (TR_LD == 1'b1)
     begin
-        AR <= BUS_Module_Out;
+        TR <= BUS_Module_Out;
     end
+    // INR
+    else if (TR_INR == 1'b1)
+    begin
+        TR <= TR + 1'b1;
+    end
+    // AR Logic
+    // Fix: Use priority order to prevent control signal conflicts
     // CLR
     if (AR_CLR == 1'b1)
     begin
         AR <= 'b0;
     end
-    // PC Logic
-    // INR
-    if (PC_INR == 1'b1)
-    begin
-        PC <= PC + 1'b1;
-    end
     // LD
-    if (PC_LD == 1'b1)
+    else if (AR_LD == 1'b1)
     begin
-        PC <= BUS_Module_Out;
+        AR <= BUS_Module_Out;
     end
+    // INR
+    else if (AR_INR == 1'b1)
+    begin
+        AR <= AR + 1'b1;
+    end
+    // PC Logic
+    // Fix: Use priority order to prevent control signal conflicts
     // CLR
     if (PC_CLR == 1'b1)
     begin
         PC <= 'b0;
     end
-    // INPR Logic
     // LD
-    INPR <= INPR_In;
+    else if (PC_LD == 1'b1)
+    begin
+        PC <= BUS_Module_Out;
+    end
+    // INR
+    else if (PC_INR == 1'b1)
+    begin
+        PC <= PC + 1'b1;
+    end
+    // INPR Logic
+    // Fix: Load INPR conditionally and set FGI when new input available
+    if (INPR_In != INPR)
+    begin
+        INPR <= INPR_In;
+        FGI <= 1'b1;  // Set flag when new input is available
+    end
     // OUTR Logic
     // LD
     if (OUTR_LD == 1'b1)
     begin
         OUTR <= BUS_Module_Out;
+        // Fix: Set FGO when output is ready
+        FGO <= 1'b1;
     end
     
     // Flip-Flops
@@ -442,20 +455,21 @@ begin
         I <= IR[Data_Width - 1];
     end
     // E
-    // NOT
-    if (E_NOT == 1'b1)
-    begin
-        E <= ~E;
-    end
-    // SET
+    // Fix: Use priority order to prevent control signal conflicts
+    // RESET
     if (E_RESET == 1'b1)
     begin
         E <= 1'b0;
     end
     // LOAD
-    if (E_LOAD == 1'b1)
+    else if (E_LOAD == 1'b1)
     begin
         E <= ALU_Module_E_Out;
+    end
+    // NOT
+    else if (E_NOT == 1'b1)
+    begin
+        E <= ~E;
     end
     // R
     // SET
@@ -691,69 +705,79 @@ begin
     Decoder_D5 = 1'b0;
     Decoder_D6 = 1'b0;
     Decoder_D7 = 1'b0;
+    Decoder_D8 = 1'b0;  // New decoder output for ABS instruction
     
-    case (IR[14 : 12])
-        // AND
-        3'b000:
-        begin
-            Decoder_D0 = 1'b1;
-        end
-        
-        // ADD
-        3'b001:
-        begin
-            Decoder_D1 = 1'b1;
-        end
-        
-        // LDA
-        3'b010:
-        begin
-            Decoder_D2 = 1'b1;
-        end
-        
-        // STA
-        3'b011:
-        begin
-            Decoder_D3 = 1'b1;
-        end
-        
-        // BUN
-        3'b100:
-        begin
-            Decoder_D4 = 1'b1;
-        end
-        
-        // BSA
-        3'b101:
-        begin
-            Decoder_D5 = 1'b1;
-        end
-        
-        // ISZ
-        3'b110:
-        begin
-            Decoder_D6 = 1'b1;
-        end
-        
-        // Register and Input/Output Instruction
-        3'b111:
-        begin
-            Decoder_D7 = 1'b1;
-        end
-        
-        // Defaults
-        default:
-        begin
-            Decoder_D0 = 1'b0;
-            Decoder_D1 = 1'b0;
-            Decoder_D2 = 1'b0;
-            Decoder_D3 = 1'b0;
-            Decoder_D4 = 1'b0;
-            Decoder_D5 = 1'b0;
-            Decoder_D6 = 1'b0;
-            Decoder_D7 = 1'b0;
-        end
-    endcase
+    // Check for ABS instruction first (4-bit opcode: 1000)
+    if (IR[15:12] == 4'b1000)
+    begin
+        Decoder_D8 = 1'b1;
+    end
+    else
+    begin
+        case (IR[14 : 12])
+            // AND
+            3'b000:
+            begin
+                Decoder_D0 = 1'b1;
+            end
+            
+            // ADD
+            3'b001:
+            begin
+                Decoder_D1 = 1'b1;
+            end
+            
+            // LDA
+            3'b010:
+            begin
+                Decoder_D2 = 1'b1;
+            end
+            
+            // STA
+            3'b011:
+            begin
+                Decoder_D3 = 1'b1;
+            end
+            
+            // BUN
+            3'b100:
+            begin
+                Decoder_D4 = 1'b1;
+            end
+            
+            // BSA
+            3'b101:
+            begin
+                Decoder_D5 = 1'b1;
+            end
+            
+            // ISZ
+            3'b110:
+            begin
+                Decoder_D6 = 1'b1;
+            end
+            
+            // Register and Input/Output Instruction
+            3'b111:
+            begin
+                Decoder_D7 = 1'b1;
+            end
+            
+            // Defaults
+            default:
+            begin
+                Decoder_D0 = 1'b0;
+                Decoder_D1 = 1'b0;
+                Decoder_D2 = 1'b0;
+                Decoder_D3 = 1'b0;
+                Decoder_D4 = 1'b0;
+                Decoder_D5 = 1'b0;
+                Decoder_D6 = 1'b0;
+                Decoder_D7 = 1'b0;
+                Decoder_D8 = 1'b0;
+            end
+        endcase
+    end
 end
 
 // Assign to Outputs

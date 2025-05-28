@@ -68,7 +68,8 @@ begin
         // CIR
         3'b100:
         begin
-            E_Out_Temp = Out_Temp[0];
+            // Fix: Use Inp_2[0] instead of Out_Temp[0] since Out_Temp not assigned yet
+            E_Out_Temp = Inp_2[0];
             Out_Temp   = {E_In, Inp_2[(Data_Width - 1) : 1]};
         end
         
@@ -82,7 +83,8 @@ begin
         // PASS 1 (AC[7 : 0] <- INPR)
         3'b110:
         begin
-            Out_Temp[7 : 0] = Inp_0;
+            // Fix: Clear upper bits and load INPR to lower 8 bits
+            Out_Temp = {{(Data_Width/2){1'b0}}, Inp_0};
         end
         
         // PASS 2 (AC <- DR)

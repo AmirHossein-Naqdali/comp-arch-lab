@@ -91,6 +91,7 @@ CPU_Module
     // Memory Interface
     // Memory Control Channel
     .Memory_Write(Memory_Write),
+    // Fix: Use consistent signal naming - Memory_Read instead of CPU_Read_Out
     .Memory_Read(CPU_Read_Out),
     // Memory Address Channel
     .Memory_Address(CPU_Address_Out),
